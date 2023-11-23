@@ -1,5 +1,6 @@
 import express from 'express'
 import authRouter from './routes/authRoutes.js'
+import productRouter from './routes/productRoute.js'
 import errorHandler from './utiles/ErrorHandler.js'
 import cookieParser from 'cookie-parser'
 const app = express()
@@ -11,6 +12,7 @@ app.use(cookieParser())
 
 //Routes
 app.use('/api/v1/auth',authRouter)
+app.use('/api/v1/product',productRouter)
 
 
 // Error Handling

@@ -56,7 +56,6 @@ export const loginController = controllerErrorHandler(async (req,res,next) => {
 });
 
 // user logout controller
-
 export const logoutController = controllerErrorHandler((req,res,next) =>{
 
     return res.cookie("token",'',{maxAge: new Date(1),httpOnly:true,secure:true}).status(200).json({
@@ -64,4 +63,23 @@ export const logoutController = controllerErrorHandler((req,res,next) =>{
         message:"Logout Successfull..",
     })
 
+})
+
+// user forgot password controller
+export const forgotPasswordController = controllerErrorHandler(async (req,res,next) =>{
+ 
+    const {sercretQuestion,email,newPassword} = req.body;
+    
+    let user = await registerModel.findOne({email})
+    if(!user) return next(new CustomError(400,"This is not a Registered Email"))
+     
+    if(user.sercretQuestion !== sercretQuestion) return next(new CustomError(400,"Wrong Answer"))
+     
+    user.password = newPassword;
+    await user.save()
+
+    return res.status(200).json({
+        success:true,
+        message:"Password Changed Successfully....."
+    })
 })
