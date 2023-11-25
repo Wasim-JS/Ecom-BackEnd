@@ -26,6 +26,7 @@ const registerSchema = new mongoose.Schema({
     sercretQuestion:{
         type:String,
         required:[true,"please provide a secret answer"],
+    
     },
     role:{
         type:String,

@@ -83,3 +83,15 @@ export const forgotPasswordController = controllerErrorHandler(async (req,res,ne
         message:"Password Changed Successfully....."
     })
 })
+
+
+//get a user route
+export const getUserDataController = controllerErrorHandler(async (req,res,next) =>{
+
+    let user = await registerModel.findById(req.user._id).select('-password -sercretQuestion')
+
+    return res.status(200).json({
+        success:true,
+        user
+    })
+})

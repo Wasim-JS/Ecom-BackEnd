@@ -1,5 +1,6 @@
 import express from 'express'
-import { forgotPasswordController, loginController, logoutController, registerController } from '../controllers/authControllers.js'
+import { forgotPasswordController, getUserDataController, loginController, logoutController, registerController } from '../controllers/authControllers.js'
+import { isLoggedIn } from '../middleware/isLoggedIn.js'
 
 const router = express.Router()
 
@@ -14,5 +15,8 @@ router.get('/logout',logoutController)
 
 // user forgot password route
 router.post('/forgot-password',forgotPasswordController)
+
+// get user data route
+router.get('/me',isLoggedIn,getUserDataController)
 
 export default router
