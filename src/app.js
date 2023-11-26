@@ -3,12 +3,20 @@ import authRouter from './routes/authRoutes.js'
 import productRouter from './routes/productRoute.js'
 import errorHandler from './utiles/ErrorHandler.js'
 import cookieParser from 'cookie-parser'
+
+// creating app
 const app = express()
+
+
 
 
 // middleware
 app.use(express.json())
 app.use(cookieParser())
+
+
+
+
 
 //Routes
 app.use('/api/v1/auth',authRouter)

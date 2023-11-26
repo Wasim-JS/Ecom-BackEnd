@@ -52,6 +52,10 @@ const productSchema = new mongoose.Schema({
     totalComments:{
         type:Number,
         default:0
+    },
+    category:{
+        type:String,
+        requried:true
     }
 
 })

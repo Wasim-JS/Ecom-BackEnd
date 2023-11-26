@@ -3,34 +3,39 @@ import controllerErrorHandler from "../utiles/ControllerErrorHandler.js";
 import CustomError from "../utiles/CustomError.js";
 import productModel from "../models/productModel.js";
 import { FilterQuery } from "../utiles/FilterQuery.js";
-
+import { uploadImageToCloud } from "../utiles/handleImageUplods.js";
 
 // create product route
 export const createProduct = controllerErrorHandler(async (req,res,next)=>{
-
-    let images = Joi.object().keys({
-        public_id: Joi.string().required(),
-        url: Joi.string().required(),
-      })
-
-      let review = Joi.object().keys({
-        user: Joi.string().required(),
-        rating: Joi.number(),
-        comment: Joi.string(),
-      })
-      
+ 
     const schema = Joi.object({
         name: Joi.string().required(),
-        image: images,
         description: Joi.string().required(),
-        price: Joi.number().required(),
-        reviews: review,
+        category: Joi.string().required(),
+        price: Joi.number(),
         totalRating: Joi.number(),
         totalComments: Joi.number()
     })
     const {error} = schema.validate(req.body);
 
     if(error) return next(error)
+
+
+    const images = req.files;
+
+   const uploadPromises = images.map((image) => uploadImageToCloud(image.path));
+
+   let cloudinaryResponses = await Promise.all(uploadPromises).catch((error) => {
+    console.error('Error during Cloudinary upload:', error);
+    return new CustomError(400,"Error during Cloudinary upload")
+   });
+
+  const imagesResult = cloudinaryResponses.map(response => ({
+    public_id:response.public_id,
+    url:response.secure_url
+  }))
+
+  req.body.image = [...imagesResult]
 
     const product = await productModel.create(req.body)
 
@@ -148,3 +153,18 @@ export const getSingleProduct = controllerErrorHandler(async (req,res,next)=>{
   })
 })
 
+// update a product
+export const updateProductController = controllerErrorHandler(async (req,res,next)=>{
+
+  const {id} = req.params
+
+  const product = await productModel.findByIdAndUpdate(id,req.body,{new:true,runValidators:true})
+   
+  res.status(200).json({
+    success:true,
+    message:"product updated successfully...",
+    product
+
+})
+
+})

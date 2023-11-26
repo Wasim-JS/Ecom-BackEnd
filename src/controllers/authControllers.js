@@ -95,3 +95,40 @@ export const getUserDataController = controllerErrorHandler(async (req,res,next)
         user
     })
 })
+
+// update user profile route
+export const updateUserProfileController = controllerErrorHandler(async (req,res,next) =>{
+
+    let user = await registerModel.findByIdAndUpdate(req.user._id,req.body,{new:true,runValidators:true
+    } )
+
+    return res.status(200).json({
+        success:true,
+        user
+    })
+
+
+})
+
+export const changeUserPasswordController = controllerErrorHandler(async (req,res,next) =>{
+
+    const {oldpassword,newPassword} = req.body
+
+    let user = await registerModel.findById(req.user._id)
+
+    let isMatch = await user.camparePassword(oldpassword)
+
+    if(!isMatch) return next(new CustomError(400,"Invalid Password"))
+
+    user.password = newPassword;
+    await user.save()
+
+    return res.status(200).json({
+        success:true,
+        message:"password changed successfully.."
+    })
+
+})
+
+
+
